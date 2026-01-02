@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 // import 'third_screen.dart';
 // import 'login_screen.dart';
 // import  'layout_screen.dart';
-import 'food_screen.dart';
+// import 'food_screen.dart';
+import 'main_screen.dart';
 // 1. ADDED: The main function to start the app
 void main() {
   runApp(const BasicApp());
@@ -17,7 +18,7 @@ class BasicApp extends StatelessWidget{
   Widget build (BuildContext context) {
     return MaterialApp( // Added const for performance
     debugShowCheckedModeBanner: false,
-      home: FoodScreen(),
+      home: MainScreen(),
     );
   }
 }

@@ -29,7 +29,7 @@ class _FirstScreenState extends State<FirstScreen> {
       drawer: _buildDrawer(context),
       endDrawer: _buildEndDrawer(),
       floatingActionButton: _buildFloating(),
-      bottomNavigationBar: _buildBottomAppBar(),
+      // bottomNavigationBar: _buildBottomAppBar(),
     );
   }
 
