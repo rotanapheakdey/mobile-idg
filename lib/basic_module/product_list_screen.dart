@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'product_model.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -12,7 +11,7 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  // 1. Fetch Data from the Real API
+  // 1. Fetch Data
   Future<List<Product>> fetchProductList() async {
     String url = "https://fakestoreapi.com/products";
     final response = await http.get(Uri.parse(url));
@@ -28,27 +27,21 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          "FakeStore Bento",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
+        title: const Text("My Shop"),
+        backgroundColor: Colors.blue,
       ),
       body: FutureBuilder<List<Product>>(
         future: fetchProductList(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              return _buildBentoGrid(snapshot.data!);
+              return _buildSimpleList(snapshot.data!);
             } else {
               return const Center(child: Text("No Data"));
             }
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            return Center(child: Text("${snapshot.error}"));
           } else {
             return const Center(child: CircularProgressIndicator());
           }
@@ -57,111 +50,41 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  // 2. The Bento Grid Layout
-  Widget _buildBentoGrid(List<Product> items) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(10),
-      child: StaggeredGrid.count(
-        crossAxisCount: 2, // Total columns
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        children: items.asMap().entries.map((entry) {
-          int index = entry.key;
-          Product product = entry.value;
-
-          // --- Bento Logic ---
-          // Make the 1st item BIG (Hero)
-          // Make every 4th item TALL (Vertical)
-          int crossAxisCount = 1;
-          num mainAxisCount = 1;
-
-          if (index == 0) {
-            crossAxisCount = 2; // Full width
-            mainAxisCount = 1.2;
-          } else if ((index % 4) == 0) { 
-            mainAxisCount = 1.6; // Tall vertical tile
-          }
-
-          return StaggeredGridTile.count(
-            crossAxisCellCount: crossAxisCount,
-            mainAxisCellCount: mainAxisCount,
-            child: _buildProductTile(product, isDark: index == 0),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  // 3. The Individual Tile Design
-  Widget _buildProductTile(Product product, {bool isDark = false}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // Image
-          Padding(
-            padding: const EdgeInsets.all(20.0), // Padding so image fits nicely
-            child: Center(
-              child: Image.network(
-                product.image,
-                fit: BoxFit.contain,
+  // 2. The Simple List Design
+  Widget _buildSimpleList(List<Product> items) {
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final product = items[index];
+        return Card(
+          margin: const EdgeInsets.all(8.0),
+          child: ListTile(
+            // Image on the left
+            leading: Image.network(
+              product.image, 
+              width: 50, 
+              height: 50,
+              fit: BoxFit.contain,
+            ),
+            // Title in the middle
+            title: Text(
+              product.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            // Price at the bottom
+            subtitle: Text(
+              "\$${product.price}",
+              style: const TextStyle(
+                color: Colors.green, 
+                fontWeight: FontWeight.bold
               ),
             ),
+            // Arrow icon on the right
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           ),
-          // Gradient Overlay & Text
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(15)),
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.8),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "\$${product.price}",
-                    style: const TextStyle(
-                      color: Colors.amber,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

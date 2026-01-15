@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 // import 'main_screen.dart';
 import 'product_list_screen.dart';
 
+
 // 
 // 1. ADDED: The main function to start the app
 void main() {
