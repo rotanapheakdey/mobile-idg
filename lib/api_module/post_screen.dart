@@ -87,9 +87,9 @@ class _PostScreenState extends State<PostScreen> {
     child: const Icon(Icons.arrow_upward, color: Colors.white),
     onPressed: () {
       _scrollController.animateTo(
-        0, // Scroll position (0 = top)
-        duration: const Duration(milliseconds: 400), // 400ms duration
-        curve: Curves.easeInOut, // Smooth curve (starts slow, speeds up, ends slow)
+        0, 
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut, 
       );
     },
   );
